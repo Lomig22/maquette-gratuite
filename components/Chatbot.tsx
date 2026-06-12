@@ -207,31 +207,40 @@ export default function Chatbot() {
     setDraft("");
     setSubmitting(true);
 
-    const payload = {
-      metier: answers.current.metier,
-      ville: answers.current.ville,
-      objectif: answers.current.objectif,
-      style: answers.current.style,
-      nom_entreprise: answers.current.nom_entreprise,
-      email: answers.current.email,
-      date: new Date().toISOString(),
-      source: "lp-maquette",
-    };
+    const a = answers.current;
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
-    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
-    if (webhookUrl) {
+    // Soumission via Web3Forms : un simple POST (formulaire déguisé),
+    // les infos collectées par le chatbot arrivent par email. Pas de webhook.
+    if (accessKey) {
       try {
-        await fetch(webhookUrl, {
+        await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: `Nouveau lead maquette — ${a.nom_entreprise} (${a.metier})`,
+            from_name: "LP Maquette gratuite",
+            email: a.email, // utilisé comme reply-to par Web3Forms
+            metier: a.metier,
+            ville: a.ville,
+            objectif: a.objectif,
+            style: a.style,
+            nom_entreprise: a.nom_entreprise,
+            source: "lp-maquette",
+            date: new Date().toISOString(),
+            botcheck: "", // honeypot anti-spam
+          }),
         });
       } catch (err) {
-        // Silent fail — the user still gets the confirmation message.
-        console.error("Webhook error:", err);
+        // Échec silencieux — l'utilisateur reçoit quand même la confirmation.
+        console.error("Form submit error:", err);
       }
     } else {
-      console.warn("NEXT_PUBLIC_WEBHOOK_URL is not set. Payload:", payload);
+      console.warn("NEXT_PUBLIC_WEB3FORMS_KEY is not set. Data:", a);
     }
 
     setSubmitting(false);

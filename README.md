@@ -1,6 +1,6 @@
 # Maquette gratuite — Landing page chatbot
 
-Landing page single-page (Next.js 14 + Tailwind CSS) avec un chatbot conversationnel qui qualifie un lead en 5 questions, puis envoie le résultat vers un webhook Make/n8n.
+Landing page single-page (Next.js 14 + Tailwind CSS) avec un chatbot conversationnel qui qualifie un lead en 5 questions. C'est en réalité un formulaire de contact déguisé : à la fin, les infos sont soumises via [Web3Forms](https://web3forms.com) et arrivent directement par email. Aucun backend, aucun webhook, aucune base de données.
 
 ## Lancer en local
 
@@ -16,20 +16,22 @@ Ouvrez http://localhost:3000
 
 | Variable | Description |
 | --- | --- |
-| `NEXT_PUBLIC_WEBHOOK_URL` | URL du webhook (Make / n8n) qui reçoit le lead en POST JSON. Si vide, le payload est seulement loggé dans la console. |
+| `NEXT_PUBLIC_WEB3FORMS_KEY` | Clé d'accès Web3Forms. Crée un formulaire gratuit sur [web3forms.com](https://web3forms.com) avec ton email, copie la clé. C'est elle qui reçoit les leads par email. Si vide, les données sont seulement loggées dans la console. |
 
-### Payload envoyé
+### Données envoyées à Web3Forms
 
 ```json
 {
+  "access_key": "...",
+  "subject": "Nouveau lead maquette — <entreprise> (<métier>)",
+  "email": "<email du prospect, utilisé comme reply-to>",
   "metier": "",
   "ville": "",
   "objectif": "",
   "style": "",
   "nom_entreprise": "",
-  "email": "",
-  "date": "",
-  "source": "lp-maquette"
+  "source": "lp-maquette",
+  "date": "<ISO>"
 }
 ```
 
@@ -37,7 +39,7 @@ Ouvrez http://localhost:3000
 
 1. Poussez le repo sur GitHub.
 2. Importez-le dans Vercel.
-3. Ajoutez la variable `NEXT_PUBLIC_WEBHOOK_URL` dans **Settings → Environment Variables**.
+3. Ajoutez la variable `NEXT_PUBLIC_WEB3FORMS_KEY` dans **Settings → Environment Variables**.
 4. Deploy.
 
 ## Structure
