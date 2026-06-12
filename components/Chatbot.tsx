@@ -208,7 +208,10 @@ export default function Chatbot() {
     setSubmitting(true);
 
     const a = answers.current;
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+    // Clé Web3Forms (publique par design). La variable d'env reste prioritaire.
+    const accessKey =
+      process.env.NEXT_PUBLIC_WEB3FORMS_KEY ||
+      "df1105d8-c1e7-40a7-8ac7-4035d433f68c";
 
     // Soumission via Web3Forms : un simple POST (formulaire déguisé),
     // les infos collectées par le chatbot arrivent par email. Pas de webhook.
